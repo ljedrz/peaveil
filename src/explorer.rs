@@ -38,14 +38,14 @@
 
 use std::collections::{HashSet, VecDeque};
 use std::net::SocketAddr;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use parking_lot::Mutex;
 use peashape::{Lane, Target};
-use rand::seq::IndexedRandom;
 use rand::SeedableRng;
+use rand::seq::IndexedRandom;
 use rand_chacha::ChaCha20Rng;
 use tokio::sync::Notify;
 use tokio::task::JoinHandle;

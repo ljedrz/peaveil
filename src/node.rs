@@ -12,12 +12,12 @@
 
 use std::io;
 use std::net::SocketAddr;
-use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::time::Instant;
 
 use parking_lot::Mutex;
-use tokio::sync::{broadcast, Notify};
+use tokio::sync::{Notify, broadcast};
 use tracing::Span;
 
 use crate::config::NodeConfig;

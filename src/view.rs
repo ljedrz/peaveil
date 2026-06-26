@@ -601,10 +601,10 @@ impl View {
     /// age-based reaper, and by the simulation harness to
     /// forget a killed node from every other node's view.
     pub fn drop_entry(&mut self, addr: &SocketAddr) {
-        if let Some(e) = self.entries.iter().find(|e| e.addr == *addr) {
-            if e.category == PeerCategory::Bootstrap || e.is_self {
-                return;
-            }
+        if let Some(e) = self.entries.iter().find(|e| e.addr == *addr)
+            && (e.category == PeerCategory::Bootstrap || e.is_self)
+        {
+            return;
         }
         self.entries.retain(|e| e.addr != *addr);
         self.addrs.remove(addr);

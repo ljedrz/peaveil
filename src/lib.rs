@@ -230,10 +230,10 @@ pub mod sim;
 
 pub use crate::config::{CoverStrategy, NodeConfig};
 pub use crate::error::Error;
-pub use crate::node::{DiscoveryEvent, Node, EVENT_CHANNEL_CAPACITY};
-pub use crate::sample::{DecodeError, PeerEntry, PeerSample, PEAVEIL_MAGIC, PEAVEIL_VERSION};
+pub use crate::node::{DiscoveryEvent, EVENT_CHANNEL_CAPACITY, Node};
+pub use crate::sample::{DecodeError, PEAVEIL_MAGIC, PEAVEIL_VERSION, PeerEntry, PeerSample};
 pub use crate::view::{PeerCategory, PeerInfo, ViewSnapshot};
 
 /// Re-exported so that callers can wire up a topology in
 /// tests without adding `pea2pea` as a direct dependency.
-pub use pea2pea::{self, connect_nodes, Topology};
+pub use pea2pea::{self, Topology, connect_nodes};

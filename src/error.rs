@@ -14,7 +14,9 @@ pub enum Error {
 
     /// The peaveil frame does not fit in the configured peashape
     /// `frame_size`. Raise `frame_size` or lower `sample_size`.
-    #[error("sample is too large for the configured frame size: need at least {needed} bytes of payload, have {available}")]
+    #[error(
+        "sample is too large for the configured frame size: need at least {needed} bytes of payload, have {available}"
+    )]
     SampleTooLarge {
         /// The number of payload bytes required to encode the
         /// requested `sample_size` peers, in bytes.

@@ -292,7 +292,7 @@ async fn simulation_metrics_are_in_expected_bands() {
     // wall-clock time and the OS scheduler is free to
     // interleave differently; instead we assert the
     // values are in plausible bands.
-    use peaveil::sim::{sim_config, Simulation};
+    use peaveil::sim::{Simulation, sim_config};
     let sim = Simulation::new(8, 0xDEADBEEF, sim_config()).await;
     sim.connect_ring().await;
     for i in 0..8 {
@@ -314,7 +314,7 @@ async fn simulation_metrics_are_in_expected_bands() {
 async fn simulation_converges_to_high_coverage() {
     // A 20-node ring with one bootstrap should converge
     // to a coverage of >70% within a few seconds.
-    use peaveil::sim::{sim_config, Simulation};
+    use peaveil::sim::{Simulation, sim_config};
     let _ = tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -371,7 +371,7 @@ async fn simulation_recovers_from_partition() {
     // A 10-node ring split into two halves; after the
     // partition heals, coverage should return to a high
     // level.
-    use peaveil::sim::{sim_config, Simulation};
+    use peaveil::sim::{Simulation, sim_config};
     let mut sim = Simulation::new(10, 0xDECAF, sim_config()).await;
     sim.connect_ring().await;
     // Seed the views so the explorer has something to
@@ -418,7 +418,7 @@ async fn simulation_handles_churn() {
     // A 10-node ring; kill two random nodes; the
     // surviving eight should still have non-trivial
     // coverage of the network.
-    use peaveil::sim::{sim_config, Simulation};
+    use peaveil::sim::{Simulation, sim_config};
     let mut sim = Simulation::new(10, 0xBEEF, sim_config()).await;
     sim.connect_ring().await;
     for i in 0..10 {

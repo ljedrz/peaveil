@@ -14,7 +14,7 @@
 
 use std::time::Duration;
 
-use peaveil::sim::{sim_config, Simulation};
+use peaveil::sim::{Simulation, sim_config};
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

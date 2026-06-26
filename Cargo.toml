@@ -1,13 +1,17 @@
 [package]
 name = "peaveil"
 version = "0.1.0"
-edition = "2021"
-license = "MIT OR CC0-1.0"
+authors = ["ljedrz <ljedrz@gmail.com>"]
+edition = "2024"
 description = "A privacy-first peer discovery protocol based on probabilistic peer sampling, gossip, and metadata-resistant discovery."
+license = "CC0-1.0 OR MIT"
 repository = "https://github.com/ljedrz/peaveil"
+homepage = "https://github.com/ljedrz/peaveil"
+documentation = "https://docs.rs/peaveil"
 readme = "README.md"
-keywords = ["p2p", "discovery", "gossip", "privacy", "pps"]
 categories = ["network-programming", "asynchronous"]
+keywords = ["p2p", "discovery", "gossip", "privacy", "pps"]
+rust-version = "1.88"
 
 [dependencies]
 peashape = "0.2"
