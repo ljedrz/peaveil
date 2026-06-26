@@ -1,0 +1,30 @@
+[package]
+name = "peaveil"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR CC0-1.0"
+description = "A privacy-first peer discovery protocol based on probabilistic peer sampling, gossip, and metadata-resistant discovery."
+repository = "https://github.com/ljedrz/peaveil"
+readme = "README.md"
+keywords = ["p2p", "discovery", "gossip", "privacy", "pps"]
+categories = ["network-programming", "asynchronous"]
+
+[dependencies]
+peashape = "0.2"
+pea2pea = "0.56"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+parking_lot = "0.12"
+rand = "0.9"
+rand_chacha = "0.9"
+bytes = "1"
+tracing = "0.1"
+thiserror = "2"
+futures-util = "0.3"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[lib]
+name = "peaveil"
+path = "src/lib.rs"
