@@ -74,9 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     println!("alice <- ???: received sample ({count} entries)");
                 }
                 peaveil::DiscoveryEvent::PeerDiscovered { addr, category } => {
-                    println!(
-                        "alice discovered {addr} as {category:?}"
-                    );
+                    println!("alice discovered {addr} as {category:?}");
                 }
                 _ => {}
             }

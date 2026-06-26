@@ -141,7 +141,7 @@ async fn mesh_reaches_high_coverage() {
 
     let mut nodes = Vec::with_capacity(N);
     for i in 0..N {
-        let node = Node::with_seed(cfg.clone(), 0xC0FFEE + i as u64,);
+        let node = Node::with_seed(cfg.clone(), 0xC0FFEE + i as u64);
         node.spawn().await.expect("spawn");
         nodes.push(node);
     }
@@ -343,8 +343,13 @@ async fn simulation_converges_to_high_coverage() {
     // Run discovery for 10 seconds.
     sim.step(std::time::Duration::from_secs(10)).await;
     let m = sim.metrics();
-    eprintln!("sim: elapsed={elapsed:.2}s, alive={alive}, avg_view={view:.2}, coverage={cov:.2}",
-        elapsed = m.elapsed_secs, alive = m.alive, view = m.avg_view_size, cov = m.coverage);
+    eprintln!(
+        "sim: elapsed={elapsed:.2}s, alive={alive}, avg_view={view:.2}, coverage={cov:.2}",
+        elapsed = m.elapsed_secs,
+        alive = m.alive,
+        view = m.avg_view_size,
+        cov = m.coverage
+    );
     // With view_size=16, the maximum possible coverage
     // in a 20-node ring is 16/19 ≈ 0.84. We expect the
     // protocol to reach at least a third of that within

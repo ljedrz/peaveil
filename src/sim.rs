@@ -140,7 +140,9 @@ impl Simulation {
             };
             // Per-node seed is a deterministic function of
             // the simulation seed and the index.
-            let node_seed = seed.wrapping_add(i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15);
+            let node_seed = seed
+                .wrapping_add(i as u64)
+                .wrapping_mul(0x9E37_79B9_7F4A_7C15);
             let node = Node::with_seed(cfg, node_seed);
             let addr = node.spawn().await.expect("spawn");
             let addr = addr.expect("listener bound");
@@ -225,8 +227,7 @@ impl Simulation {
             total_recent += snap.recent.len() as f64;
             total_random += snap.random.len() as f64;
             total_bootstrap += snap.bootstrap.len() as f64;
-            total_view +=
-                (snap.trusted.len() + snap.recent.len() + snap.random.len()) as f64;
+            total_view += (snap.trusted.len() + snap.recent.len() + snap.random.len()) as f64;
             // Coverage counts the fraction of *other* alive
             // nodes that this node has heard of. The view
             // snapshot never contains the node's own address

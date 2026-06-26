@@ -750,7 +750,12 @@ mod tests {
         let v = make_view();
         let self_addr = v.self_addr();
         let snap = v.snapshot();
-        for p in snap.trusted.iter().chain(snap.recent.iter()).chain(snap.random.iter()) {
+        for p in snap
+            .trusted
+            .iter()
+            .chain(snap.recent.iter())
+            .chain(snap.random.iter())
+        {
             assert_ne!(p.addr, self_addr);
         }
     }
@@ -904,10 +909,7 @@ mod tests {
     #[test]
     fn add_bootstrap_inserts_entries() {
         let mut v = make_view();
-        v.add_bootstrap([
-            "10.0.0.1:1".parse().unwrap(),
-            "10.0.0.2:2".parse().unwrap(),
-        ]);
+        v.add_bootstrap(["10.0.0.1:1".parse().unwrap(), "10.0.0.2:2".parse().unwrap()]);
         assert_eq!(v.bootstrap_addrs().len(), 2);
         // Bootstrap entries live in their own pool: a node with
         // only bootstrap has not *discovered* any peer yet, so
@@ -915,7 +917,10 @@ mod tests {
         // bootstrap pool is not.
         let snap = v.snapshot();
         assert_eq!(snap.bootstrap.len(), 2);
-        assert_eq!(snap.trusted.len() + snap.recent.len() + snap.random.len(), 0);
+        assert_eq!(
+            snap.trusted.len() + snap.recent.len() + snap.random.len(),
+            0
+        );
     }
 
     #[test]
@@ -951,7 +956,10 @@ mod tests {
         v.merge_sample(&entries, Instant::now());
         let snap = v.snapshot();
         let non_bootstrap = snap.trusted.len() + snap.recent.len() + snap.random.len();
-        assert!(non_bootstrap <= 4, "got {non_bootstrap} non-bootstrap entries");
+        assert!(
+            non_bootstrap <= 4,
+            "got {non_bootstrap} non-bootstrap entries"
+        );
     }
 
     #[test]

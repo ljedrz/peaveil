@@ -60,13 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let m = sim.metrics();
         println!(
             "{:<8}  {:<5}  {:<10.2}  {:<10.2}  {:<10.2}  {:<10.2}  {:<10.2}",
-            tick,
-            m.alive,
-            m.avg_view_size,
-            m.avg_trusted,
-            m.avg_recent,
-            m.avg_random,
-            m.coverage,
+            tick, m.alive, m.avg_view_size, m.avg_trusted, m.avg_recent, m.avg_random, m.coverage,
         );
     }
     println!();

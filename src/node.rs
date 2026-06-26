@@ -159,8 +159,8 @@ impl Node {
         // Without this, the explorer would silently fail to
         // ship any sample because the encoded payload is
         // larger than the configured frame size.
-        let min_frame = peashape::ID_SIZE + crate::sample::SAMPLE_HEADER_SIZE
-            + crate::sample::IPV4_ENTRY_SIZE;
+        let min_frame =
+            peashape::ID_SIZE + crate::sample::SAMPLE_HEADER_SIZE + crate::sample::IPV4_ENTRY_SIZE;
         assert!(
             config.frame_size >= min_frame,
             "frame_size ({fs} bytes) is too small: a peaveil frame needs at least \
@@ -183,8 +183,8 @@ impl Node {
         // silently break. Reject this up front so the caller
         // gets a clear panic at construction rather than a
         // runtime `Error::SampleTooLarge` on every tick.
-        let worst_case_payload = crate::sample::SAMPLE_HEADER_SIZE
-            + config.sample_size * crate::sample::IPV6_ENTRY_SIZE;
+        let worst_case_payload =
+            crate::sample::SAMPLE_HEADER_SIZE + config.sample_size * crate::sample::IPV6_ENTRY_SIZE;
         assert!(
             peashape::ID_SIZE + worst_case_payload <= config.frame_size,
             "frame_size ({fs} bytes) is too small for sample_size={ss}: \
@@ -212,10 +212,7 @@ impl Node {
             placeholder,
             seed,
         );
-        let span = tracing::info_span!(
-            "peaveil",
-            name = config.name.as_deref().unwrap_or("?")
-        );
+        let span = tracing::info_span!("peaveil", name = config.name.as_deref().unwrap_or("?"));
 
         // The explorer holds an `Arc<NodeInner>` for
         // background access, but `NodeInner` owns the
@@ -275,7 +272,11 @@ impl Node {
         self.spawn_receive_task();
 
         // Start the explorer.
-        self.inner.explorer.get().expect("explorer initialized").spawn();
+        self.inner
+            .explorer
+            .get()
+            .expect("explorer initialized")
+            .spawn();
 
         Ok(addr)
     }

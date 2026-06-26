@@ -219,10 +219,7 @@ fn ship_sample(inner: &Arc<NodeInner>, target: SocketAddr) -> Result<(), crate::
     // here keeps the constant-size-frame property intact
     // instead of letting `build_frame` truncate or overflow.
     let needed = sample.encoded_size();
-    let available = inner
-        .config
-        .frame_size
-        .saturating_sub(peashape::ID_SIZE);
+    let available = inner.config.frame_size.saturating_sub(peashape::ID_SIZE);
     if needed > available {
         return Err(crate::Error::SampleTooLarge { needed, available });
     }
@@ -250,10 +247,12 @@ fn ship_sample(inner: &Arc<NodeInner>, target: SocketAddr) -> Result<(), crate::
     }
 
     // Fire a discovery event for the application.
-    inner.events.dispatch(crate::node::DiscoveryEvent::SampleSent {
-        to: target,
-        count: sample.len(),
-    });
+    inner
+        .events
+        .dispatch(crate::node::DiscoveryEvent::SampleSent {
+            to: target,
+            count: sample.len(),
+        });
     Ok(())
 }
 
@@ -300,7 +299,10 @@ pub(crate) fn handle_received_sample(inner: &Arc<NodeInner>, sample: PeerSample)
     // the set of new addresses and their categories before
     // releasing. Three locks per received frame was the
     // biggest hot-path cost in profiling.
-    let (new_addrs, evicted): (Vec<(SocketAddr, crate::view::PeerCategory)>, Vec<SocketAddr>) = {
+    let (new_addrs, evicted): (
+        Vec<(SocketAddr, crate::view::PeerCategory)>,
+        Vec<SocketAddr>,
+    ) = {
         let mut view = inner.view.lock();
         let before = view.snapshot_address_set();
         let evicted = view.merge_sample(sample.entries(), now);
@@ -336,15 +338,17 @@ pub(crate) fn handle_received_sample(inner: &Arc<NodeInner>, sample: PeerSample)
             .events
             .dispatch(crate::node::DiscoveryEvent::PeerEvicted { addr });
     }
-    inner.events.dispatch(crate::node::DiscoveryEvent::SampleReceived {
-        // The "from" address is not known at this layer
-        // (peashape's broadcast strips it); report the
-        // peer's *learned* set size as a coarse activity
-        // signal. The protocol does not depend on this
-        // value.
-        from: std::net::SocketAddr::from(([0, 0, 0, 0], 0)),
-        count: sample.len(),
-    });
+    inner
+        .events
+        .dispatch(crate::node::DiscoveryEvent::SampleReceived {
+            // The "from" address is not known at this layer
+            // (peashape's broadcast strips it); report the
+            // peer's *learned* set size as a coarse activity
+            // signal. The protocol does not depend on this
+            // value.
+            from: std::net::SocketAddr::from(([0, 0, 0, 0], 0)),
+            count: sample.len(),
+        });
     if let Some(e) = inner.explorer.get() {
         e.poke();
     }

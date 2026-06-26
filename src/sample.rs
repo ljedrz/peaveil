@@ -156,7 +156,12 @@ impl PeerSample {
     /// Returns the encoded size of this sample, in bytes, when
     /// serialized as a `peaveil` payload.
     pub fn encoded_size(&self) -> usize {
-        SAMPLE_HEADER_SIZE + self.entries.iter().map(PeerEntry::encoded_size).sum::<usize>()
+        SAMPLE_HEADER_SIZE
+            + self
+                .entries
+                .iter()
+                .map(PeerEntry::encoded_size)
+                .sum::<usize>()
     }
 
     /// Maximum number of entries a single sample can carry.
@@ -379,7 +384,10 @@ mod tests {
     fn truncated_rejected() {
         let bytes = sample().encode();
         let truncated = &bytes[..bytes.len() - 3];
-        assert!(matches!(PeerSample::decode(truncated), Err(DecodeError::Truncated)));
+        assert!(matches!(
+            PeerSample::decode(truncated),
+            Err(DecodeError::Truncated)
+        ));
     }
 
     #[test]
