@@ -1,5 +1,9 @@
 # peaveil
 
+[![Crates.io](https://img.shields.io/crates/v/peaveil.svg)](https://crates.io/crates/peaveil)
+[![Documentation](https://docs.rs/peaveil/badge.svg)](https://docs.rs/peaveil)
+[![dependency status](https://deps.rs/repo/github/ljedrz/peaveil/status.svg)](https://deps.rs/repo/github/ljedrz/peaveil)
+
 A privacy-first peer-discovery protocol based on
 probabilistic peer sampling, gossip, and metadata-resistant
 discovery.
@@ -7,6 +11,25 @@ discovery.
 `peaveil` does not answer *"find node X"*. It answers
 *"give me enough good peers, all the time."* Discovery is
 not an operation; it is a permanent background activity.
+
+---
+
+### 📖 Table of Contents
+
+- [What it is not](#what-it-is-not)
+- [How it works](#how-it-works)
+- [Who opens connections?](#who-opens-connections)
+- [Composition with `peashape` and `peasub`](#composition-with-peashape-and-peasub)
+- [Threat model](#threat-model)
+- [Quick start](#quick-start)
+- [Measurements](#measurements)
+- [Run the demo](#run-the-demo)
+- [Run the tests](#run-the-tests)
+- [Architecture](#architecture)
+- [License](#license)
+- [Peapod](#-peapod)
+
+---
 
 ## What it is not
 
