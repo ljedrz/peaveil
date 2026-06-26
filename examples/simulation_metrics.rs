@@ -68,22 +68,45 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Demonstrate partition recovery: split the network in
     // half, watch the views diverge, then heal.
+    //
+    // Note: `coverage` is a property of the *view* (which peers a
+    // node has heard of) and is intentionally decoupled from the
+    // connection state — it doesn't drop the moment a partition
+    // is created, because stale entries persist. What *does* drop
+    // and recover is the direct peer count, which tracks active
+    // TCP connections.
     println!();
     println!("Now: partition into two halves, wait, then heal.");
+    let avg_conn = |sim: &Simulation| -> f64 {
+        let n = sim.len() as f64;
+        (0..sim.len())
+            .map(|i| sim.node(i).connected_peers().len() as f64)
+            .sum::<f64>()
+            / n
+    };
+    let conn_pre = avg_conn(&sim);
+    let m_pre = sim.metrics();
+    println!(
+        "pre:           coverage = {:.2}, avg_view = {:.2}, avg_conn = {:.2}",
+        m_pre.coverage, m_pre.avg_view_size, conn_pre,
+    );
+
     sim.partition((0..10).collect(), (10..20).collect()).await;
     sim.step(Duration::from_secs(2)).await;
     let m_partitioned = sim.metrics();
+    let conn_partitioned = avg_conn(&sim);
     println!(
-        "post-partition: coverage = {:.2}, avg_view = {:.2}",
-        m_partitioned.coverage, m_partitioned.avg_view_size
+        "post-partition: coverage = {:.2}, avg_view = {:.2}, avg_conn = {:.2}",
+        m_partitioned.coverage, m_partitioned.avg_view_size, conn_partitioned,
     );
 
     sim.heal_partition().await;
     sim.step(Duration::from_secs(3)).await;
     let m_healed = sim.metrics();
+    let conn_healed = avg_conn(&sim);
     println!(
-        "post-heal:     coverage = {:.2}, avg_view = {:.2}",
-        m_healed.coverage, m_healed.avg_view_size
+        "post-heal:     coverage = {:.2}, avg_view = {:.2}, avg_conn = {:.2}",
+        m_healed.coverage, m_healed.avg_view_size, conn_healed,
     );
 
     sim.shutdown().await;
