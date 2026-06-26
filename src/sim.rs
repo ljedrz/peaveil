@@ -44,7 +44,7 @@ use std::net::SocketAddr;
 use std::time::{Duration, Instant};
 
 use rand::seq::IndexedRandom;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rand_chacha::ChaCha20Rng;
 use tokio::time;
 

@@ -43,7 +43,7 @@ use std::time::{Duration, Instant};
 
 use parking_lot::Mutex;
 use rand::seq::IndexedRandom;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rand_chacha::ChaCha20Rng;
 
 /// Which of the four pools a peer currently belongs to.
