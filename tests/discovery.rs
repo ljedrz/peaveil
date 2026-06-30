@@ -65,7 +65,6 @@ async fn two_nodes_learn_each_other() {
     // other. With a 100 ms exchange cadence and a 20 ms
     // cover rate, this should happen well within 1 s.
     let alice_addr = alice.local_addr().await.unwrap().expect("alice bound");
-    eprintln!("alice_addr = {alice_addr}, bob_addr = {bob_addr}");
     let deadline = Instant::now() + Duration::from_secs(2);
     while Instant::now() < deadline {
         let alice_view = alice.view();
@@ -90,9 +89,6 @@ async fn two_nodes_learn_each_other() {
 
     let alice_view = alice.view();
     let bob_view = bob.view();
-    eprintln!("alice_view = {alice_view:?}");
-    eprintln!("bob_view = {bob_view:?}");
-    eprintln!("alice_addr = {alice_addr}, bob_addr = {bob_addr}");
     assert!(
         alice_view
             .trusted
@@ -110,9 +106,8 @@ async fn two_nodes_learn_each_other() {
             .chain(bob_view.recent.iter())
             .chain(bob_view.random.iter())
             .any(|p| p.addr == alice_addr),
-        "bob never learned about alice: {:?}, alice_addr={}",
-        bob_view,
-        alice_addr
+        "bob never learned about alice: {:?}",
+        bob_view
     );
 
     alice.shutdown().await;

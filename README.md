@@ -162,7 +162,11 @@ been configured for.
 — that is the *pea*verse philosophy: a library does
 strictly only what it is designed to do, and any
 additional property (encryption, authentication, etc.) is
-the caller's responsibility to layer on.
+the caller's responsibility to layer on. The recommended
+path is to register a custom `pea2pea` `Handshake` on the
+underlying transport via `Node::p2p()` — see
+`examples/encrypted.rs` for a minimal pre-shared-key
+handshake that wraps the TCP stream in ChaCha20-Poly1305.
 
 ## Quick start
 
@@ -246,6 +250,7 @@ for _ in 0..10 {
 ```sh
 cargo run --example two_nodes             # 2-node peer discovery
 cargo run --example simulation_metrics    # 20-node ring + partition recovery
+cargo run --example encrypted             # PSK + ChaCha20-Poly1305 handshake
 ```
 
 ## Run the tests

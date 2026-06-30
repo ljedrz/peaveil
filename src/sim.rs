@@ -312,7 +312,7 @@ impl Simulation {
         // re-learned only if some other node re-gossips it,
         // which for a truly dead node never happens.
         for &j in self.alive_set.iter() {
-            self.nodes[j].inner.view.lock().drop_entry(&dead_addr);
+            self.nodes[j].drop_peer(&dead_addr);
         }
     }
 

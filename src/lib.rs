@@ -133,19 +133,27 @@
 //!   protocol);
 //! - traffic *content* analysis: `peaveil` does not
 //!   encrypt the contents of a peer sample. A passive
-//!   observer who can read the wire learns the full list
-//!   of peers this node has been talking to. End-to-end
+//!   observer who can read the wire learns the full list of
+//!   peers this node has been talking to. End-to-end
 //!   confidentiality of the sample is the application's
-//!   responsibility; layer it via a `pea2pea` `Handshake`
-//!   (e.g. Noise / TLS), by configuring `peashape` with a
-//!   custom [`peashape::CoverGenerator`] that produces
-//!   encrypted-looking cover, or by encrypting the
-//!   payload before submitting it to `peashape`. The
-//!   constant size, constant timing, and per-tick cover
-//!   that `peashape` provides still defeat the
-//!   "is this node exchanging samples right now?"
+//!   responsibility; layer it via a `pea2pea`
+//!   [`Handshake`] (e.g. Noise / TLS), by configuring
+//!   `peashape` with a custom [`peashape::CoverGenerator`]
+//!   that produces encrypted-looking cover, or by
+//!   encrypting the payload before submitting it to
+//!   `peashape`. The constant size, constant timing, and
+//!   per-tick cover that `peashape` provides still defeat
+//!   the "is this node exchanging samples right now?"
 //!   question regardless of whether the payload is
 //!   encrypted.
+//!
+//! The recommended path for transport-level encryption is
+//! to register a custom `Handshake` via
+//! [`Node::p2p`], which exposes the underlying
+//! `pea2pea::Node` so a `Handshake` can be wired in
+//! *before* the listener comes up. See `examples/encrypted.rs`
+//! for a minimal pre-shared-key handshake that wraps the
+//! TCP stream in ChaCha20-Poly1305.
 //!
 //! # Measurements
 //!
@@ -234,6 +242,16 @@ pub use crate::node::{DiscoveryEvent, EVENT_CHANNEL_CAPACITY, Node};
 pub use crate::sample::{DecodeError, PEAVEIL_MAGIC, PEAVEIL_VERSION, PeerEntry, PeerSample};
 pub use crate::view::{PeerCategory, PeerInfo, ViewSnapshot};
 
-/// Re-exported so that callers can wire up a topology in
-/// tests without adding `pea2pea` as a direct dependency.
-pub use pea2pea::{self, Topology, connect_nodes};
+/// Re-export of the `pea2pea` transport primitives that
+/// `peaveil` builds on. `Node::p2p` returns the underlying
+/// `pea2pea::Node`, and the `protocols` module re-exports
+/// the [`Handshake`], [`Pea2Pea`], and [`Connection`]
+/// types needed to wire a custom `Handshake` on top.
+///
+/// [`Handshake`]: pea2pea::protocols::Handshake
+/// [`Pea2Pea`]: pea2pea::Pea2Pea
+/// [`Connection`]: pea2pea::Connection
+pub use pea2pea::{
+    self, Connection, ConnectionSide, Pea2Pea, Topology, connect_nodes,
+    protocols::Handshake,
+};

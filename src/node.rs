@@ -74,13 +74,13 @@ pub enum DiscoveryEvent {
 /// [`Node`].
 pub(crate) struct NodeInner {
     /// The configuration the node was built from.
-    pub config: NodeConfig,
+    pub(crate) config: NodeConfig,
     /// The peashape node that owns the wire-level state
     /// (lanes, scheduler, connection set, codec).
-    pub peashape: peashape::Node,
+    pub(crate) peashape: peashape::Node,
     /// The local view. Always present; the self-entry is
     /// inserted on construction.
-    pub view: Mutex<View>,
+    pub(crate) view: Mutex<View>,
     /// The background explorer task.
     ///
     /// Stored behind an `OnceLock` to break a chicken-and-egg
@@ -89,23 +89,23 @@ pub(crate) struct NodeInner {
     /// `NodeInner` owns the explorer. The lock is filled once,
     /// immediately after `NodeInner` is constructed, before
     /// any clone of the `Node` is observable.
-    pub explorer: std::sync::OnceLock<Explorer>,
+    pub(crate) explorer: std::sync::OnceLock<Explorer>,
     /// Discovery events. The receiver side is exposed by
     /// [`Node::subscribe_events`].
-    pub events: Events,
+    pub(crate) events: Events,
     /// Set to true by `Node::shutdown`. The explorer polls
     /// this on every tick to break out of its loop.
-    pub shutting_down: AtomicBool,
+    pub(crate) shutting_down: AtomicBool,
     /// Fires when shutdown has been requested. Used by
     /// background helpers that want to wake up immediately
     /// rather than waiting for a tick.
-    pub shutdown_waiter: Notify,
+    pub(crate) shutdown_waiter: Notify,
     /// The tracing span of this node. Used by the explorer
     /// to attach its debug logs.
-    pub span: Span,
+    pub(crate) span: Span,
     /// Handle to the peaveil receive task. Aborted on
     /// shutdown.
-    pub receive_handle: Mutex<Option<tokio::task::JoinHandle<()>>>,
+    pub(crate) receive_handle: Mutex<Option<tokio::task::JoinHandle<()>>>,
 }
 
 impl NodeInner {
@@ -342,6 +342,19 @@ impl Node {
         self.inner.view.lock().contains(addr)
     }
 
+    /// Drops the entry for `addr` from the local view, if
+    /// it is a non-bootstrap, non-self entry. The
+    /// reclassification pass would evict the entry anyway
+    /// after `trusted_max_age` / `recent_max_age` /
+    /// `random_max_age`, but this method gives the caller
+    /// immediate eviction (e.g. when a peer's connection
+    /// has been observed to fail) and is the right knob
+    /// for simulation harnesses that need to forget a
+    /// killed node from every other node's view.
+    pub fn drop_peer(&self, addr: &SocketAddr) {
+        self.inner.view.lock().drop_entry(addr);
+    }
+
     /// Returns a sorted, deduplicated list of all
     /// non-self addresses currently in the view.
     pub fn known_peers(&self) -> Vec<SocketAddr> {
@@ -373,6 +386,30 @@ impl Node {
     /// traffic on the same connection set.
     pub fn peashape(&self) -> &peashape::Node {
         &self.inner.peashape
+    }
+
+    /// Returns a reference to the underlying `pea2pea::Node`.
+    ///
+    /// Exposed so that callers can layer additional `pea2pea`
+    /// protocols on top of `peaveil` — most importantly, a
+    /// custom [`Handshake`](pea2pea::protocols::Handshake) to
+    /// encrypt and authenticate the TCP connection. Register
+    /// the handshake through the returned `&pea2pea::Node`
+    /// **before** calling [`Node::spawn`]: once `spawn`
+    /// returns, the listener is already accepting connections
+    /// and the peaveil receive task is already pulling
+    /// frames, so a handshake registered afterwards will not
+    /// be applied to links that come up later.
+    ///
+    /// `peaveil` itself stays out of the crypto business, but
+    /// the underlying transport is fully under the caller's
+    /// control — this is the recommended way to add
+    /// transport-level encryption to a `peaveil` deployment.
+    /// See `examples/encrypted.rs` for a minimal
+    /// pre-shared-key handshake that wraps the TCP stream
+    /// with ChaCha20-Poly1305.
+    pub fn p2p(&self) -> &pea2pea::Node {
+        self.inner.peashape.p2p()
     }
 
     /// Returns the [`NodeConfig`] this node was built from.
@@ -416,8 +453,9 @@ impl Node {
             // look like peaveil peer samples and
             // forwarding the rest to a no-op (cover
             // frames are not interesting to peaveil).
+            let min_len = peashape::ID_SIZE + crate::sample::SAMPLE_HEADER_SIZE;
             while let Ok(frame) = rx.recv().await {
-                if frame.len() < peashape::ID_SIZE + 3 {
+                if frame.len() < min_len {
                     continue;
                 }
                 let payload = &frame[peashape::ID_SIZE..];

@@ -14,7 +14,7 @@
 
 use std::time::Duration;
 
-use peaveil::{CoverStrategy, Node, NodeConfig, PeerCategory};
+use peaveil::{CoverStrategy, Node, NodeConfig};
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -140,5 +140,4 @@ fn print_view(view: &peaveil::ViewSnapshot) {
             p.last_seen
         );
     }
-    let _ = PeerCategory::Bootstrap; // silence unused import in minimal builds
 }

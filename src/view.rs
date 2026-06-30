@@ -201,18 +201,6 @@ impl View {
         v
     }
 
-    /// Returns the configuration this view was built from.
-    #[allow(dead_code)]
-    pub fn config(&self) -> &ViewConfig {
-        &self.config
-    }
-
-    /// Returns the local node's own address.
-    #[allow(dead_code)]
-    pub fn self_addr(&self) -> SocketAddr {
-        self.self_addr
-    }
-
     /// Updates the local node's own address. Used by
     /// `Node::spawn` to replace the placeholder address
     /// used at construction time with the bound listener
@@ -720,14 +708,14 @@ mod tests {
     #[test]
     fn set_self_addr_updates_addrs_and_self_entry() {
         let mut v = make_view();
-        let placeholder = v.self_addr();
+        let placeholder = v.self_addr;
         let new_addr: SocketAddr = "10.0.0.1:9000".parse().unwrap();
         v.set_self_addr(new_addr, Instant::now());
         // The new address is now in the addrs set.
         assert!(v.contains(&new_addr));
         // The placeholder is no longer addressable.
         assert!(!v.contains(&placeholder));
-        assert_eq!(v.self_addr(), new_addr);
+        assert_eq!(v.self_addr, new_addr);
     }
 
     #[test]
@@ -748,7 +736,7 @@ mod tests {
         // the samples we ship) but must never surface in the
         // public snapshot.
         let v = make_view();
-        let self_addr = v.self_addr();
+        let self_addr = v.self_addr;
         let snap = v.snapshot();
         for p in snap
             .trusted
@@ -987,7 +975,7 @@ mod tests {
         // The self-entry should appear at least once in a
         // sample of size 8 with 20+ other entries (we
         // sample uniformly).
-        let self_addr = v.self_addr();
+        let self_addr = v.self_addr;
         // (not strictly required, but is the design.)
         let _ = self_addr;
     }
