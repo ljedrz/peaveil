@@ -245,44 +245,6 @@ for _ in 0..10 {
 # Ok(()) }
 ```
 
-## Run the demo
-
-```sh
-cargo run --example two_nodes             # 2-node peer discovery
-cargo run --example simulation_metrics    # 20-node ring + partition recovery
-cargo run --example encrypted             # PSK + ChaCha20-Poly1305 handshake
-```
-
-## Run the tests
-
-```sh
-cargo test                 # all tests
-cargo test --lib           # codec + view unit tests
-cargo test --test discovery # integration + simulation tests
-```
-
-## Architecture
-
-```
-peaveil
-├── src/
-│   ├── lib.rs          # public API
-│   ├── config.rs       # NodeConfig, CoverStrategy
-│   ├── view.rs         # the four-pool View
-│   ├── sample.rs       # PeerSample wire codec
-│   ├── explorer.rs     # background exploration task
-│   ├── node.rs         # public Node type
-│   ├── events.rs       # DiscoveryEvent broadcast
-│   ├── error.rs        # Error enum
-│   ├── config_bridge.rs # NodeConfig -> ShapeConfig translation
-│   └── sim.rs          # Simulation harness
-├── examples/
-│   ├── two_nodes.rs    # minimal end-to-end
-│   └── simulation_metrics.rs  # measurement run
-└── tests/
-    └── discovery.rs    # integration + simulation tests
-```
-
 ## License
 
 CC0-1.0 OR MIT.
