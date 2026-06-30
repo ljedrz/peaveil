@@ -46,9 +46,7 @@ use chacha20poly1305::aead::rand_core::RngCore;
 use chacha20poly1305::aead::{Aead, KeyInit, OsRng};
 use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
 use hkdf::Hkdf;
-use peaveil::{
-    Connection, ConnectionSide, CoverStrategy, Handshake, Node, NodeConfig, Pea2Pea,
-};
+use peaveil::{Connection, ConnectionSide, CoverStrategy, Handshake, Node, NodeConfig, Pea2Pea};
 use sha2::Sha256;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf, split};
 use tracing_subscriber::EnvFilter;
@@ -73,7 +71,6 @@ impl Pea2Pea for PskHandshake {
         self.inner.p2p()
     }
 }
-
 
 impl Handshake for PskHandshake {
     const TIMEOUT_MS: u64 = 5_000;
@@ -275,9 +272,9 @@ impl<R: AsyncRead + Unpin> AsyncRead for DecStream<R> {
         //    header or a partial body).
         loop {
             if self.inbound.len() >= LEN_LEN {
-                let len = u32::from_be_bytes(
-                    self.inbound[..LEN_LEN].try_into().expect("LEN_LEN bytes"),
-                ) as usize;
+                let len =
+                    u32::from_be_bytes(self.inbound[..LEN_LEN].try_into().expect("LEN_LEN bytes"))
+                        as usize;
                 if len < CHUNK_NONCE_LEN + CHUNK_TAG_LEN {
                     return Poll::Ready(Err(io::Error::new(
                         io::ErrorKind::InvalidData,
@@ -359,7 +356,9 @@ impl<R: Unpin, W: AsyncWrite + Unpin> AsyncWrite for BiStream<R, W> {
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
+        .with_env_filter(
+            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
+        )
         .init();
 
     println!("╔═════════════════════════════════════════════════════════════╗");
@@ -495,10 +494,6 @@ fn print_view(view: &peaveil::ViewSnapshot) {
         );
     }
     for p in &view.bootstrap {
-        println!(
-            "  [boot]    {}:{}  (bootstrap)",
-            p.addr.ip(),
-            p.addr.port(),
-        );
+        println!("  [boot]    {}:{}  (bootstrap)", p.addr.ip(), p.addr.port(),);
     }
 }

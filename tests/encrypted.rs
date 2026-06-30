@@ -82,7 +82,10 @@ async fn encrypted_handshake_lets_nodes_discover() {
     alice.add_recent(bob_addr);
     bob.add_recent(alice_addr);
     alice.connect(bob_addr).await.unwrap();
-    assert!(wait_connected(&alice, bob_addr).await, "alice never connected to bob");
+    assert!(
+        wait_connected(&alice, bob_addr).await,
+        "alice never connected to bob"
+    );
 
     // Wait up to 2 s for each side to learn about the
     // other through the encrypted link.

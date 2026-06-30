@@ -29,9 +29,7 @@ use chacha20poly1305::aead::rand_core::RngCore;
 use chacha20poly1305::aead::{Aead, KeyInit, OsRng};
 use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
 use hkdf::Hkdf;
-use peaveil::{
-    Connection, ConnectionSide, Handshake, Pea2Pea,
-};
+use peaveil::{Connection, ConnectionSide, Handshake, Pea2Pea};
 use sha2::Sha256;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf, split};
 
@@ -213,9 +211,9 @@ impl<R: AsyncRead + Unpin> AsyncRead for DecStream<R> {
         //    header or a partial body).
         loop {
             if self.inbound.len() >= LEN_LEN {
-                let len = u32::from_be_bytes(
-                    self.inbound[..LEN_LEN].try_into().expect("LEN_LEN bytes"),
-                ) as usize;
+                let len =
+                    u32::from_be_bytes(self.inbound[..LEN_LEN].try_into().expect("LEN_LEN bytes"))
+                        as usize;
                 if len < CHUNK_NONCE_LEN + CHUNK_TAG_LEN {
                     return Poll::Ready(Err(io::Error::new(
                         io::ErrorKind::InvalidData,

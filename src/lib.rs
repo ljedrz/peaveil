@@ -252,6 +252,5 @@ pub use crate::view::{PeerCategory, PeerInfo, ViewSnapshot};
 /// [`Pea2Pea`]: pea2pea::Pea2Pea
 /// [`Connection`]: pea2pea::Connection
 pub use pea2pea::{
-    self, Connection, ConnectionSide, Pea2Pea, Topology, connect_nodes,
-    protocols::Handshake,
+    self, Connection, ConnectionSide, Pea2Pea, Topology, connect_nodes, protocols::Handshake,
 };
