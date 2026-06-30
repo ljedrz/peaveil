@@ -31,6 +31,19 @@ pub enum CoverStrategy {
         /// The Poisson-process rate, in frames per second.
         rate: f64,
     },
+
+    /// No cover traffic and no constant-rate emission: real
+    /// (peer-sample) frames are sent as soon as they are
+    /// produced, with no padding. The application is still
+    /// responsible for the per-frame size it submits.
+    ///
+    /// Use this when the application does not need
+    /// metadata-privacy properties (constant rate, constant
+    /// size) and would rather not pay the cover-traffic
+    /// bandwidth cost. Both ends of a connection must use the
+    /// same strategy and agree on `frame_size` for the wire
+    /// protocol to work.
+    None,
 }
 
 impl CoverStrategy {
@@ -38,6 +51,7 @@ impl CoverStrategy {
         match *self {
             CoverStrategy::Constant { interval } => ShapingStrategy::Constant { interval },
             CoverStrategy::Poisson { rate } => ShapingStrategy::Poisson { rate },
+            CoverStrategy::None => ShapingStrategy::None,
         }
     }
 }

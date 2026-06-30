@@ -14,7 +14,7 @@ keywords = ["p2p", "discovery", "gossip", "privacy", "pps"]
 rust-version = "1.88"
 
 [dependencies]
-peashape = "0.2"
+peashape = "0.3"
 pea2pea = "0.56"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
 parking_lot = "0.12"

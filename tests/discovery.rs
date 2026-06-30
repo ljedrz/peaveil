@@ -446,3 +446,65 @@ async fn simulation_handles_churn() {
 
     sim.shutdown().await;
 }
+
+/// A peaveil node configured with `CoverStrategy::None`
+/// (passthrough mode) must still exchange peer samples: the
+/// cover strategy only governs the *traffic* side of the
+/// shaper, not the discovery logic. Two nodes should learn
+/// about each other just as they do under the default
+/// `Constant` cover — only the on-the-wire frame rate and
+/// uniformity differ.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn passthrough_mode_still_discovers_peers() {
+    let mut cfg = test_config("alice");
+    cfg.cover = CoverStrategy::None;
+    let alice = Node::with_seed(cfg, 0xA11CE);
+    let mut cfg = test_config("bob");
+    cfg.cover = CoverStrategy::None;
+    let bob = Node::with_seed(cfg, 0xB0B);
+    alice.spawn().await.unwrap();
+    bob.spawn().await.unwrap();
+    tokio::time::sleep(Duration::from_millis(20)).await;
+
+    let bob_addr = bob.local_addr().await.unwrap().expect("bob bound");
+    let alice_addr = alice.local_addr().await.unwrap().expect("alice bound");
+    alice.add_recent(bob_addr);
+    bob.add_recent(alice_addr);
+    alice.connect(bob_addr).await.unwrap();
+    assert!(wait_connected(&alice, bob_addr).await);
+
+    // Wait up to 2 s for each side to learn about the other.
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut alice_knows_bob = false;
+    let mut bob_knows_alice = false;
+    while Instant::now() < deadline && !(alice_knows_bob && bob_knows_alice) {
+        let snap = alice.view();
+        alice_knows_bob = snap
+            .trusted
+            .iter()
+            .chain(snap.recent.iter())
+            .chain(snap.random.iter())
+            .any(|p| p.addr == bob_addr);
+        let snap = bob.view();
+        bob_knows_alice = snap
+            .trusted
+            .iter()
+            .chain(snap.recent.iter())
+            .chain(snap.random.iter())
+            .any(|p| p.addr == alice_addr);
+        if !(alice_knows_bob && bob_knows_alice) {
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+    }
+    assert!(
+        alice_knows_bob,
+        "alice never learned about bob under passthrough mode"
+    );
+    assert!(
+        bob_knows_alice,
+        "bob never learned about alice under passthrough mode"
+    );
+
+    alice.shutdown().await;
+    bob.shutdown().await;
+}
