@@ -1,6 +1,6 @@
 [package]
 name = "peaveil"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["ljedrz <ljedrz@gmail.com>"]
 edition = "2024"
 description = "A privacy-first peer discovery protocol based on probabilistic peer sampling, gossip, and metadata-resistant discovery."
